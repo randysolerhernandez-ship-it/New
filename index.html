@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Eythanboll</title>
+
+<style>
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at center,
+        #102030,
+        #05080d 60%,
+        #000000);
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+
+/* MENU */
+
+#menu {
+    padding-top: 70px;
+}
+
+#menu h1 {
+    color: #00ffff;
+    letter-spacing: 4px;
+    text-shadow:
+        0 0 5px #00ffff,
+        0 0 15px #00ffff,
+        0 0 30px #0088ff;
+}
+
+#botonJugar {
+    width: 220px;
+    height: 65px;
+
+    margin-top: 30px;
+
+    background: rgba(0,255,255,0.12);
+
+    border: 2px solid #00ffff;
+    border-radius: 12px;
+
+    color: #00ffff;
+
+    font-size: 24px;
+    font-weight: bold;
+
+    box-shadow:
+        0 0 10px #00ffff,
+        0 0 25px rgba(0,255,255,0.5);
+}
+
+
+/* JUEGO */
+
+#juegoCompleto {
+    display: none;
+}
+
+#hud {
+    margin: 10px;
+}
+
+#hud p {
+    display: inline-block;
+
+    margin: 4px;
+    padding: 7px 10px;
+
+    background: rgba(0,20,30,0.8);
+
+    border: 1px solid #00ffff;
+    border-radius: 7px;
+
+    color: #00ffff;
+
+    box-shadow: 0 0 8px rgba(0,255,255,0.4);
+}
+
+
+/* AREA DEL JUEGO */
+
+#juego {
+
+    width: 350px;
+    height: 500px;
+
+    max-width: 95vw;
+
+    margin: auto;
+
+    position: relative;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(circle at center,
+        rgba(0,100,130,0.12),
+        rgba(0,0,0,0.95));
+
+    border: 2px solid #00ffff;
+    border-radius: 12px;
+
+    box-shadow:
+        0 0 10px #00ffff,
+        0 0 30px rgba(0,255,255,0.35);
+}
+
+
+/* REJILLA FUTURISTA */
+
+#juego::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            rgba(0,255,255,0.05) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(0,255,255,0.05) 1px,
+            transparent 1px
+        );
+
+    background-size: 25px 25px;
+
+    animation:
+        moverRejilla 4s linear infinite;
+
+    opacity: 0.8;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+
+@keyframes moverRejilla {
+
+    from {
+        background-position:
+            0 0,
+            0 0;
+    }
+
+    to {
+        background-position:
+            25px 25px,
+            25px 25px;
+    }
+}
+
+
+/* JUGADOR */
+
+#jugador {
+
+    position: absolute;
+
+    width: 40px;
+    height: 40px;
+
+    background:
+        radial-gradient(
+            circle,
+            #ff7777,
+            #1f00ff 55%,
+            #700000
+        );
+
+    border: 2px solid #ff3333;
+
+    border-radius: 50%;
+
+    z-index: 2;
+
+    box-shadow:
+        0 0 8px hwb(246 0% 0%),
+        0 0 20px hwb(254 0% 0%);
+
+    animation:
+        energiaJugador 1.2s ease-in-out infinite;
+}
+
+
+@keyframes energiaJugador {
+
+    0%,100% {
+        box-shadow:
+            0 0 8px red,
+            0 0 20px red;
+    }
+
+    50% {
+        box-shadow:
+            0 0 14px red,
+            0 0 30px red,
+            0 0 45px rgba(255,0,0,0.4);
+    }
+}
+
+
+/* OBJETIVO VERDE */
+
+#objetivo {
+
+    position: absolute;
+
+    width: 30px;
+    height: 30px;
+
+    background:
+        radial-gradient(
+            circle,
+            white,
+            #00ff66 45%,
+            #006622
+        );
+
+    border: 2px solid #00ff66;
+
+    border-radius: 50%;
+
+    z-index: 2;
+
+    box-shadow:
+        0 0 8px #00ff66,
+        0 0 20px #00ff66;
+
+    animation:
+        pulsoObjetivo 0.8s ease-in-out infinite;
+}
+
+
+@keyframes pulsoObjetivo {
+
+    0%,100% {
+        box-shadow:
+            0 0 8px #00ff66,
+            0 0 20px #00ff66;
+
+        opacity: 1;
+    }
+
+    50% {
+        box-shadow:
+            0 0 14px #00ff66,
+            0 0 30px #00ff66,
+            0 0 45px rgba(0,255,100,0.5);
+
+        opacity: 0.85;
+    }
+}
+
+
+/* PELIGRO ROJO */
+
+#peligro {
+
+    position: absolute;
+
+    width: 28px;
+    height: 28px;
+
+    background:
+        radial-gradient(
+            circle,
+            white,
+            #ff2222 40%,
+            #660000
+        );
+
+    border: 2px solid #ff0000;
+
+    border-radius: 50%;
+
+    z-index: 2;
+
+    display: none;
+
+    box-shadow:
+        0 0 10px red,
+        0 0 25px red;
+
+    animation:
+        pulsoPeligro 0.6s ease-in-out infinite;
+}
+
+
+@keyframes pulsoPeligro {
+
+    0%,100% {
+        box-shadow:
+            0 0 10px red,
+            0 0 25px red;
+    }
+
+    50% {
+        box-shadow:
+            0 0 18px red,
+            0 0 35px red,
+            0 0 50px rgba(255,0,0,0.6);
+    }
+}
+
+
+/* OBJETIVO ESPECIAL AMARILLO */
+
+#especial {
+
+    position: absolute;
+
+    width: 22px;
+    height: 22px;
+
+    background:
+        radial-gradient(
+            circle,
+            white,
+            #ffff00 40%,
+            #ff9900
+        );
+
+    border: 2px solid #ffff00;
+
+    border-radius: 50%;
+
+    z-index: 3;
+
+    display: none;
+
+    box-shadow:
+        0 0 10px #ffff00,
+        0 0 25px #ffff00,
+        0 0 40px rgba(255,255,0,0.6);
+
+    animation:
+        pulsoEspecial 0.45s ease-in-out infinite;
+}
+
+
+@keyframes pulsoEspecial {
+
+    0%,100% {
+
+        box-shadow:
+            0 0 10px #ffff00,
+            0 0 25px #ffff00;
+
+        transform: scale(1);
+    }
+
+    50% {
+
+        box-shadow:
+            0 0 18px #ffff00,
+            0 0 35px #ffff00,
+            0 0 50px rgba(255,255,0,0.7);
+
+        transform: scale(1.15);
+    }
+}
+
+
+/* ANIMACION CAPTURA */
+
+@keyframes capturarObjetivo {
+
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.8);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+
+.objetivoCapturado {
+
+    animation:
+        capturarObjetivo 0.25s ease-out;
+}
+
+
+/* CONTROLES */
+
+#controles {
+
+    margin-top: 12px;
+
+    display: grid;
+
+    grid-template-columns:
+        70px 70px 70px;
+
+    grid-template-rows:
+        60px 60px;
+
+    justify-content: center;
+
+    gap: 6px;
+}
+
+
+.control {
+
+    width: 62px;
+    height: 55px;
+
+    background:
+        rgba(0,255,255,0.12);
+
+    border: 2px solid #00ffff;
+
+    border-radius: 10px;
+
+    color: #00ffff;
+
+    font-size: 24px;
+
+    box-shadow:
+        0 0 8px rgba(0,255,255,0.5);
+}
+
+
+#arriba {
+    grid-column: 2;
+}
+
+#izquierda {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+#abajo {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+#derecha {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+
+/* GAME OVER */
+
+#gameOver {
+
+    display: none;
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        rgba(0,0,0,0.94);
+
+    z-index: 10;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-direction: column;
+}
+
+
+#gameOver h1 {
+
+    color: #ff0044;
+
+    font-size: 42px;
+
+    text-shadow:
+        0 0 8px red,
+        0 0 20px red;
+}
+
+
+#gameOver p {
+
+    color: #00ffff;
+
+    font-size: 18px;
+}
+
+
+#reiniciar {
+
+    margin-top: 15px;
+
+    width: 200px;
+    height: 55px;
+
+    background:
+        rgba(0,255,255,0.12);
+
+    border: 2px solid #00ffff;
+
+    border-radius: 10px;
+
+    color: #00ffff;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 0 10px #00ffff;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- MENU -->
+
+<div id="menu">
+
+    <h1>⚡ Eythanboll</h1>
+
+    <p>
+        🏆 Récord:
+        <span id="recordMenu">0</span>
+    </p>
+
+    <button id="botonJugar">
+        JUGAR
+    </button>
+
+</div>
+
+
+
+<!-- JUEGO -->
+
+<div id="juegoCompleto">
+
+
+    <div id="hud">
+
+        <p>
+            ⭐
+            <span id="puntos">0</span>
+        </p>
+
+        <p>
+            ⏱️
+            <span id="tiempo">30</span>
+        </p>
+
+        <p>
+            ❤️
+            <span id="vidas">4</span>
+        </p>
+
+        <p>
+            🆙
+            <span id="nivel">1</span>
+        </p>
+
+    </div>
+
+
+
+    <div id="juego">
+
+        <div id="jugador"></div>
+
+        <div id="objetivo"></div>
+
+        <div id="peligro"></div>
+
+        <div id="especial"></div>
+
+
+
+        <!-- GAME OVER -->
+
+        <div id="gameOver">
+
+            <h1>GAME OVER</h1>
+
+            <p>
+                Puntos:
+                <span id="puntosFinal">0</span>
+            </p>
+
+            <p>
+                Récord:
+                <span id="recordFinal">0</span>
+            </p>
+
+            <p>
+                Nivel:
+                <span id="nivelFinal">1</span>
+            </p>
+
+            <button id="reiniciar">
+                JUGAR DE NUEVO
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- CONTROLES -->
+
+    <div id="controles">
+
+        <button
+            class="control"
+            id="arriba">
+            ▲
+        </button>
+
+        <button
+            class="control"
+            id="izquierda">
+            ◀
+        </button>
+
+        <button
+            class="control"
+            id="abajo">
+            ▼
+        </button>
+
+        <button
+            class="control"
+            id="derecha">
+            ▶
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+
+let jugador =
+    document.getElementById("jugador");
+
+let objetivo =
+    document.getElementById("objetivo");
+
+let peligro =
+    document.getElementById("peligro");
+
+let especial =
+    document.getElementById("especial");
+
+
+let puntosTexto =
+    document.getElementById("puntos");
+
+let tiempoTexto =
+    document.getElementById("tiempo");
+
+let vidasTexto =
+    document.getElementById("vidas");
+
+let nivelTexto =
+    document.getElementById("nivel");
+
+
+let recordMenu =
+    document.getElementById("recordMenu");
+
+let puntosFinal =
+    document.getElementById("puntosFinal");
+
+let recordFinal =
+    document.getElementById("recordFinal");
+
+let nivelFinal =
+    document.getElementById("nivelFinal");
+
+let gameOver =
+    document.getElementById("gameOver");
+
+
+let puntos = 0;
+
+let tiempo = 30;
+
+let vidas = 4;
+
+let nivel = 1;
+
+
+let jugadorX = 150;
+
+let jugadorY = 230;
+
+
+let objetivoX = 150;
+
+let objetivoY = 100;
+
+
+let peligroX = 200;
+
+let peligroY = 200;
+
+
+let especialX = 150;
+
+let especialY = 150;
+
+
+let intervaloTiempo;
+
+let movimientoObjetivo;
+
+let intervaloPeligro;
+
+let intervaloEspecial;
+
+let tiempoEspecial;
+
+
+
+/* =========================
+   AUDIO
+========================= */
+
+
+let audioContext = null;
+
+
+function prepararSonido() {
+
+    if (audioContext == null) {
+
+        let AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        audioContext =
+            new AudioContext();
+    }
+
+
+    if (
+        audioContext.state ===
+        "suspended"
+    ) {
+
+        audioContext.resume();
+    }
+}
+
+
+
+function sonido(
+    frecuencia,
+    duracion,
+    volumen
+) {
+
+    prepararSonido();
+
+
+    let oscilador =
+        audioContext.createOscillator();
+
+    let ganancia =
+        audioContext.createGain();
+
+
+    oscilador.type = "sine";
+
+
+    oscilador.frequency.setValueAtTime(
+        frecuencia,
+        audioContext.currentTime
+    );
+
+
+    ganancia.gain.setValueAtTime(
+        volumen,
+        audioContext.currentTime
+    );
+
+
+    ganancia.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioContext.currentTime +
+        duracion
+    );
+
+
+    oscilador.connect(ganancia);
+
+    ganancia.connect(
+        audioContext.destination
+    );
+
+
+    oscilador.start();
+
+
+    oscilador.stop(
+        audioContext.currentTime +
+        duracion
+    );
+}
+
+
+
+/* =========================
+   RECORD
+========================= */
+
+
+let record =
+    Number(
+        localStorage.getItem(
+            "recordJuego"
+        )
+    ) || 0;
+
+
+recordMenu.textContent =
+    record;
+
+
+
+/* =========================
+   JUGADOR
+========================= */
+
+
+function actualizarJugador() {
+
+    jugador.style.left =
+        jugadorX + "px";
+
+    jugador.style.top =
+        jugadorY + "px";
+}
+
+
+
+function moverJugador(
+    dx,
+    dy
+) {
+
+    jugadorX += dx;
+
+    jugadorY += dy;
+
+
+    let maxX =
+        350 -
+        jugador.offsetWidth;
+
+    let maxY =
+        500 -
+        jugador.offsetHeight;
+
+
+    if (jugadorX < 0)
+        jugadorX = 0;
+
+    if (jugadorY < 0)
+        jugadorY = 0;
+
+
+    if (jugadorX > maxX)
+        jugadorX = maxX;
+
+    if (jugadorY > maxY)
+        jugadorY = maxY;
+
+
+    actualizarJugador();
+
+    comprobarColisiones();
+}
+
+
+
+/* =========================
+   CONTROLES
+========================= */
+
+
+let intervaloMovimiento = null;
+
+function iniciarMovimiento(dx, dy, frecuencia) {
+
+    if (intervaloMovimiento !== null) {
+        clearInterval(intervaloMovimiento);
+    }
+
+    moverJugador(dx, dy);
+
+    intervaloMovimiento = setInterval(function() {
+        moverJugador(dx, dy);
+    }, frecuencia);
+}
+
+function detenerMovimiento() {
+
+    if (intervaloMovimiento !== null) {
+        clearInterval(intervaloMovimiento);
+        intervaloMovimiento = null;
+    }
+}
+
+
+// ARRIBA
+document.getElementById("arriba")
+.addEventListener("touchstart", function(e) {
+
+    e.preventDefault();
+
+    sonido(500, 0.05, 0.04);
+
+    iniciarMovimiento(0, -15, 60);
+
+}, { passive: false });
+
+
+// ABAJO
+document.getElementById("abajo")
+.addEventListener("touchstart", function(e) {
+
+    e.preventDefault();
+
+    sonido(400, 0.05, 0.04);
+
+    iniciarMovimiento(0, 15, 60);
+
+}, { passive: false });
+
+
+// IZQUIERDA
+document.getElementById("izquierda")
+.addEventListener("touchstart", function(e) {
+
+    e.preventDefault();
+
+    sonido(450, 0.05, 0.04);
+
+    iniciarMovimiento(-15, 0, 60);
+
+}, { passive: false });
+
+
+// DERECHA
+document.getElementById("derecha")
+.addEventListener("touchstart", function(e) {
+
+    e.preventDefault();
+
+    sonido(550, 0.05, 0.04);
+
+    iniciarMovimiento(15, 0, 60);
+
+}, { passive: false });
+
+
+// SOLTAR EL BOTÓN
+document.querySelectorAll(".control")
+.forEach(function(boton) {
+
+    boton.addEventListener("touchend", function(e) {
+
+        e.preventDefault();
+        detenerMovimiento();
+
+    }, { passive: false });
+
+    boton.addEventListener("touchcancel", function() {
+
+        detenerMovimiento();
+
+    });
+
+});
+
+
+
+/* =========================
+   OBJETIVO VERDE
+========================= */
+
+
+function moverObjetivo() {
+
+    let maxX =
+        350 -
+        objetivo.offsetWidth;
+
+    let maxY =
+        500 -
+        objetivo.offsetHeight;
+
+
+    objetivoX =
+        Math.random() *
+        maxX;
+
+
+    objetivoY =
+        Math.random() *
+        maxY;
+
+
+    objetivo.style.left =
+        objetivoX + "px";
+
+    objetivo.style.top =
+        objetivoY + "px";
+}
+
+
+
+function actualizarMovimientoObjetivo() {
+
+    clearInterval(
+        movimientoObjetivo
+    );
+
+
+    if (nivel >= 2) {
+
+        let velocidad =
+            Math.max(
+                300,
+                1200 -
+                ((nivel - 2) * 200)
+            );
+
+
+        movimientoObjetivo =
+            setInterval(
+                moverObjetivo,
+                velocidad
+            );
+    }
+}
+
+
+
+function actualizarTamanoObjetivo() {
+
+    let nuevoTamano =
+        Math.max(
+            12,
+            30 -
+            ((nivel - 1) * 3)
+        );
+
+
+    objetivo.style.width =
+        nuevoTamano + "px";
+
+    objetivo.style.height =
+        nuevoTamano + "px";
+}
+
+
+
+/* =========================
+   PELIGRO ROJO
+========================= */
+
+
+function moverPeligro() {
+
+    let maxX =
+        350 -
+        peligro.offsetWidth;
+
+    let maxY =
+        500 -
+        peligro.offsetHeight;
+
+
+    peligroX =
+        Math.random() *
+        maxX;
+
+
+    peligroY =
+        Math.random() *
+        maxY;
+
+
+    peligro.style.left =
+        peligroX + "px";
+
+    peligro.style.top =
+        peligroY + "px";
+}
+
+
+
+function actualizarPeligro() {
+
+    clearInterval(
+        intervaloPeligro
+    );
+
+
+    if (nivel >= 2) {
+
+        peligro.style.display =
+            "block";
+
+
+        moverPeligro();
+
+
+        intervaloPeligro =
+            setInterval(
+                moverPeligro,
+                1500
+            );
+
+    } else {
+
+        peligro.style.display =
+            "none";
+    }
+}
+
+
+
+/* =========================
+   OBJETIVO ESPECIAL
+========================= */
+
+
+function moverEspecial() {
+
+    let maxX =
+        350 -
+        especial.offsetWidth;
+
+    let maxY =
+        500 -
+        especial.offsetHeight;
+
+
+    especialX =
+        Math.random() *
+        maxX;
+
+
+    especialY =
+        Math.random() *
+        maxY;
+
+
+    especial.style.left =
+        especialX + "px";
+
+    especial.style.top =
+        especialY + "px";
+}
+
+
+
+function mostrarEspecial() {
+
+    if (nivel < 2)
+        return;
+
+
+    if (
+        especial.style.display ===
+        "block"
+    )
+        return;
+
+
+    moverEspecial();
+
+
+    especial.style.display =
+        "block";
+
+
+    sonido(
+        1200,
+        0.15,
+        0.12
+    );
+
+
+    clearTimeout(
+        tiempoEspecial
+    );
+
+
+    tiempoEspecial =
+        setTimeout(
+            function() {
+
+                especial.style.display =
+                    "none";
+
+            },
+            4000
+        );
+}
+
+
+
+function iniciarEspeciales() {
+
+    clearInterval(
+        intervaloEspecial
+    );
+
+
+    intervaloEspecial =
+        setInterval(
+            function() {
+
+                mostrarEspecial();
+
+            },
+            7000
+        );
+}
+
+
+
+/* =========================
+   COLISIONES
+========================= */
+
+
+function comprobarColisionObjetivo() {
+
+    let jugadorRect =
+        jugador.getBoundingClientRect();
+
+    let objetivoRect =
+        objetivo.getBoundingClientRect();
+
+
+    if (
+
+        jugadorRect.left <
+        objetivoRect.right &&
+
+        jugadorRect.right >
+        objetivoRect.left &&
+
+        jugadorRect.top <
+        objetivoRect.bottom &&
+
+        jugadorRect.bottom >
+        objetivoRect.top
+
+    ) {
+
+        capturarObjetivo();
+    }
+}
+
+
+
+function comprobarColisionPeligro() {
+
+    if (
+        peligro.style.display ===
+        "none"
+    )
+        return;
+
+
+    let jugadorRect =
+        jugador.getBoundingClientRect();
+
+    let peligroRect =
+        peligro.getBoundingClientRect();
+
+
+    if (
+
+        jugadorRect.left <
+        peligroRect.right &&
+
+        jugadorRect.right >
+        peligroRect.left &&
+
+        jugadorRect.top <
+        peligroRect.bottom &&
+
+        jugadorRect.bottom >
+        peligroRect.top
+
+    ) {
+
+        perderVida();
+    }
+}
+
+
+
+function comprobarColisionEspecial() {
+
+    if (
+        especial.style.display ===
+        "none"
+    )
+        return;
+
+
+    let jugadorRect =
+        jugador.getBoundingClientRect();
+
+    let especialRect =
+        especial.getBoundingClientRect();
+
+
+    if (
+
+        jugadorRect.left <
+        especialRect.right &&
+
+        jugadorRect.right >
+        especialRect.left &&
+
+        jugadorRect.top <
+        especialRect.bottom &&
+
+        jugadorRect.bottom >
+        especialRect.top
+
+    ) {
+
+        capturarEspecial();
+    }
+}
+
+
+
+function comprobarColisiones() {
+
+    comprobarColisionObjetivo();
+
+    comprobarColisionPeligro();
+
+    comprobarColisionEspecial();
+}
+
+
+
+/* =========================
+   CAPTURAR VERDE
+========================= */
+
+
+function capturarObjetivo() {
+
+    objetivo.classList.add(
+        "objetivoCapturado"
+    );
+
+
+    sonido(
+        800,
+        0.12,
+        0.12
+    );
+
+
+    setTimeout(
+        function() {
+
+            objetivo.classList.remove(
+                "objetivoCapturado"
+            );
+
+
+            puntos++;
+
+
+            puntosTexto.textContent =
+                puntos;
+
+
+            let nuevoNivel =
+                Math.floor(
+                    puntos / 5
+                ) + 1;
+
+
+            if (
+                nuevoNivel >
+                nivel
+            ) {
+
+                nivel =
+                    nuevoNivel;
+
+
+                nivelTexto.textContent =
+                    nivel;
+
+
+                sonido(
+                    1000,
+                    0.15,
+                    0.12
+                );
+
+
+                setTimeout(
+                    function() {
+
+                        sonido(
+                            1500,
+                            0.18,
+                            0.12
+                        );
+
+                    },
+                    150
+                );
+
+
+                actualizarTamanoObjetivo();
+
+                actualizarMovimientoObjetivo();
+
+                actualizarPeligro();
+            }
+
+
+            moverObjetivo();
+
+            comprobarColisiones();
+
+        },
+        250
+    );
+}
+tiempo += 5;
+
+tiempoTexto.textContent =
+    tiempo;
+
+
+/* =========================
+   CAPTURAR ESPECIAL
+========================= */
+
+function capturarEspecial() {
+
+    especial.style.display =
+        "none";
+
+    clearTimeout(
+        tiempoEspecial
+    );
+
+    puntos += 3;
+
+    puntosTexto.textContent =
+        puntos;
+  tiempo += 5;
+
+tiempoTexto.textContent =
+    tiempo;
+
+    /* SONIDO ESPECIAL */
+
+    sonido(
+        1300,
+        0.12,
+        0.12
+    );
+
+    setTimeout(
+        function() {
+
+            sonido(
+                1700,
+                0.16,
+                0.12
+            );
+
+        },
+        120
+    );
+
+    let nuevoNivel =
+        Math.floor(
+            puntos / 5
+        ) + 1;
+
+    if (
+        nuevoNivel >
+        nivel
+    ) {
+
+        nivel =
+            nuevoNivel;
+
+        nivelTexto.textContent =
+            nivel;
+
+        setTimeout(
+            function() {
+
+                sonido(
+                    1000,
+                    0.15,
+                    0.12
+                );
+
+                setTimeout(
+                    function() {
+
+                        sonido(
+                            1500,
+                            0.18,
+                            0.12
+                        );
+
+                    },
+                    150
+                );
+
+            },
+            100
+        );
+
+        actualizarTamanoObjetivo();
+
+        actualizarMovimientoObjetivo();
+
+        actualizarPeligro();
+    }
+  }
+  /* =========================
+   PERDER VIDA
+========================= */
+
+function perderVida() {
+
+    vidas--;
+
+    vidasTexto.textContent =
+        vidas;
+
+    sonido(
+        150,
+        0.20,
+        0.15
+    );
+
+    moverPeligro();
+
+    if (
+        vidas <= 0
+    ) {
+
+        terminarJuego();
+    }
+}
+
+
+/* =========================
+   TIEMPO
+========================= */
+
+function iniciarTemporizador() {
+
+    clearInterval(
+        intervaloTiempo
+    );
+
+    intervaloTiempo =
+        setInterval(
+            function() {
+
+                tiempo--;
+
+                tiempoTexto.textContent =
+                    tiempo;
+
+                if (
+                    tiempo <= 0
+                ) {
+
+                    terminarJuego();
+                }
+
+            },
+            1000
+        );
+}
+  /* =========================
+   TERMINAR JUEGO
+========================= */
+
+function terminarJuego() {
+
+    clearInterval(
+        intervaloTiempo
+    );
+
+    clearInterval(
+        movimientoObjetivo
+    );
+
+    clearInterval(
+        intervaloPeligro
+    );
+
+    clearInterval(
+        intervaloEspecial
+    );
+
+    clearTimeout(
+        tiempoEspecial
+    );
+
+    especial.style.display =
+        "none";
+
+    if (
+        puntos > record
+    ) {
+
+        record =
+            puntos;
+
+        localStorage.setItem(
+            "recordJuego",
+            record
+        );
+
+        recordMenu.textContent =
+            record;
+    }
+
+    puntosFinal.textContent =
+        puntos;
+
+    recordFinal.textContent =
+        record;
+
+    nivelFinal.textContent =
+        nivel;
+
+    gameOver.style.display =
+        "flex";
+  }
+  /* =========================
+   INICIAR JUEGO
+========================= */
+
+function iniciarJuego() {
+
+    prepararSonido();
+
+    puntos = 0;
+
+    tiempo = 30;
+
+    vidas = 4;
+
+    nivel = 1;
+
+    puntosTexto.textContent =
+        puntos;
+
+    tiempoTexto.textContent =
+        tiempo;
+
+    vidasTexto.textContent =
+        vidas;
+
+    nivelTexto.textContent =
+        nivel;
+
+    gameOver.style.display =
+        "none";
+
+    jugadorX = 150;
+
+    jugadorY = 230;
+
+    actualizarJugador();
+
+    objetivo.style.width =
+        "30px";
+
+    objetivo.style.height =
+        "30px";
+
+    objetivo.style.display =
+        "block";
+
+    peligro.style.display =
+        "none";
+
+    especial.style.display =
+        "none";
+
+    clearInterval(
+        movimientoObjetivo
+    );
+
+    clearInterval(
+        intervaloPeligro
+    );
+
+    clearInterval(
+        intervaloEspecial
+    );
+
+    clearTimeout(
+        tiempoEspecial
+    );
+
+    moverObjetivo();
+
+    iniciarTemporizador();
+
+    iniciarEspeciales();
+          }
+  /* =========================
+   BOTONES
+========================= */
+
+document.getElementById(
+    "botonJugar"
+)
+.addEventListener(
+    "click",
+    function() {
+
+        sonido(
+            700,
+            0.08,
+            0.08
+        );
+
+        document.getElementById(
+            "menu"
+        ).style.display =
+            "none";
+
+        document.getElementById(
+            "juegoCompleto"
+        ).style.display =
+            "block";
+
+        iniciarJuego();
+    }
+);
+
+
+document.getElementById(
+    "reiniciar"
+)
+.addEventListener(
+    "click",
+    function() {
+
+        sonido(
+            700,
+            0.08,
+            0.08
+        );
+
+        iniciarJuego();
+    }
+);
+
+
+/* =========================
+   POSICION INICIAL
+========================= */
+
+actualizarJugador();
+
+moverObjetivo();
+
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js");
+}
+</script>
+</body>
+
+</html>
